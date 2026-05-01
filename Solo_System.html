@@ -723,7 +723,7 @@
 <div id="particles"></div>
 <div class="scan-line"></div>
 <div id="notif"></div>
-<div id="by-lacho">by lacho</div>
+
 
 <!-- ══ VFX v8 ELEMENTS ══ -->
 <!-- 1. Blue Ember Canvas -->
@@ -796,7 +796,6 @@
     <div class="ob-scan-bar"><div class="ob-scan-fill"></div></div>
     <div class="ob-text">Entre miles de millones de almas débiles, <em>solo uno</em> puede alzarse.<br>El Sistema ha despertado en las sombras.<br>Has sido seleccionado. Tu ascenso es inevitable.</div>
     <button class="ob-btn" onclick="nextSlide()">RESPONDER AL LLAMADO →</button>
-    <div style="position:absolute;bottom:18px;right:18px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;opacity:.5;pointer-events:none">by lacho · creador del sistema</div>
   </div>
 
   <!-- Slide 1: Name + Avatar -->
@@ -977,7 +976,7 @@
       <div style="display:flex;align-items:center;gap:10px">
         <div class="header-avatar" id="header-avatar" onclick="switchTab('stats',document.querySelector('[data-tab=stats]'))">👤</div>
         <div>
-          <div class="sys-label">Solo_Sistem</div>
+          <div class="sys-label">SISTEMA</div>
           <div class="hunter-name" id="h-hunter-name">CAZADOR</div>
           <div class="level-row">
             <span class="level-num" id="h-level">Nv.1</span>
@@ -1554,7 +1553,7 @@ const SKILL_BRANCHES = [
     skills:[
       {id:"phantom_step",name:"Phantom Step",desc:"+15% XP en quests AGI",cost:2,icon:"💨",prereq:null},
       {id:"vitality_surge",name:"Vitality Surge",desc:"+15% XP en quests VIT",cost:2,icon:"🛡️",prereq:null},
-      {id:"coin_hoarder",name:"Coin Hoarder",desc:"+20% coins en cada quest",cost:2,icon:"💎",prereq:"phantom_step"},
+      {id:"coin_hoarder",name:"Coin Hoarder",desc:"+20% coins en cada quest",cost:2,icon:"🌑",prereq:"phantom_step"},
       {id:"shadow_economy",name:"Shadow Economy",desc:"+1 Skill Point cada 5 quests",cost:3,icon:"🌑",prereq:"coin_hoarder"},
     ]
   }
@@ -1654,7 +1653,7 @@ let DAILY_QUESTS_DATA = getDailyQuestsForToday();
 const SHOP_ITEMS = [
   {id:"potion_berserker",name:"Poción Berserker",icon:"🔴",desc:"Aumenta 1.3x las reps de tu próxima quest STR durante 24h",price:80,effect:"berserker_boost",duration:24*60*60*1000},
   {id:"potion_shadow_elixir",name:"Elixir de Sombra",icon:"⚫",desc:"+50% XP en todas las quests durante 2 horas",price:120,effect:"xp_boost_50",duration:2*60*60*1000},
-  {id:"potion_mana_crystal",name:"Cristal de Maná",icon:"💎",desc:"Restaura MP al máximo instantáneamente",price:60,effect:"restore_mp",duration:0},
+  {id:"potion_mana_crystal",name:"Cristal de Maná",icon:"🌑",desc:"Restaura MP al máximo instantáneamente",price:60,effect:"restore_mp",duration:0},
   {id:"potion_phoenix_blood",name:"Sangre del Fénix",icon:"🔥",desc:"Restaura HP al máximo y +20 HP permanente",price:150,effect:"phoenix",duration:0},
   {id:"potion_time_warp",name:"Elixir Temporal",icon:"⌛",desc:"+2 Skill Points instantáneamente",price:200,effect:"skill_points_2",duration:0},
   {id:"potion_kings_decree",name:"Decreto Real",icon:"👑",desc:"Dobla las coins ganadas durante 4 horas",price:250,effect:"coin_boost_2x",duration:4*60*60*1000},
@@ -1684,7 +1683,7 @@ const STAT_SKILL_TREE = [
     desc:"El intelecto que descifra los secretos del Sistema",
     skills:[
       {id:"int_1",name:"Ojo Arcano",desc:"+10% XP en quests INT",icon:"👁️",cost:60,bonus:"int_xp_10"},
-      {id:"int_2",name:"Cristal de Maná",desc:"+10 MP máximo permanente",icon:"💎",cost:100,bonus:"mp_10"},
+      {id:"int_2",name:"Cristal de Maná",desc:"+10 MP máximo permanente",icon:"🌑",cost:100,bonus:"mp_10"},
       {id:"int_3",name:"Trance del Sabio",desc:"+20% XP en todas las sesiones Focus",icon:"🧠",cost:150,bonus:"focus_xp_20"},
       {id:"int_4",name:"Sello del Conocimiento",desc:"Cada nivel de INT suma +2 XP por quest permanente",icon:"📜",cost:220,bonus:"int_per_level"},
       {id:"int_5",name:"Dominio del Sistema",desc:"El Sistema revela su verdad: +1 Skill Point cada 3 niveles",icon:"🌌",cost:350,bonus:"sp_per_3lvl"},
@@ -1709,7 +1708,7 @@ const STAT_SKILL_TREE = [
     skills:[
       {id:"vit_1",name:"Piel de Hierro",desc:"+10% XP en quests VIT",icon:"🛡️",cost:60,bonus:"vit_xp_10"},
       {id:"vit_2",name:"Regeneración Oscura",desc:"HP se regenera +10 al completar cualquier quest",icon:"❤️",cost:100,bonus:"hp_regen_10"},
-      {id:"vit_3",name:"Voluntad Inquebrantable",desc:"Nunca entras en estado Debilitado por fallar 1 día",icon:"💎",cost:150,bonus:"no_weaken"},
+      {id:"vit_3",name:"Voluntad Inquebrantable",desc:"Nunca entras en estado Debilitado por fallar 1 día",icon:"🌑",cost:150,bonus:"no_weaken"},
       {id:"vit_4",name:"Corazón del Monarca",desc:"HP máximo +30 + MP máximo +15",icon:"💜",cost:220,bonus:"hp30_mp15"},
       {id:"vit_5",name:"Inmortal de las Sombras",desc:"Al perder racha, conservas el 50% del progreso semanal",icon:"⚜️",cost:350,bonus:"streak_keep_50"},
     ]
@@ -1729,7 +1728,7 @@ const ACHIEVEMENTS_DATA = [
   {id:"first_quest",name:"Cazador Novato",desc:"Completa tu primera misión",icon:"⚔️",condition:s=>s.totalQuestsCompleted>=1},
   {id:"quest_5",name:"En el Camino",desc:"Completa 5 misiones",icon:"🗡️",condition:s=>s.totalQuestsCompleted>=5},
   {id:"quest_15",name:"Veterano",desc:"Completa 15 misiones",icon:"🏹",condition:s=>s.totalQuestsCompleted>=15},
-  {id:"quest_25",name:"Élite",desc:"Completa 25 misiones",icon:"💎",condition:s=>s.totalQuestsCompleted>=25},
+  {id:"quest_25",name:"Élite",desc:"Completa 25 misiones",icon:"🌑",condition:s=>s.totalQuestsCompleted>=25},
   {id:"quest_50",name:"Leyenda",desc:"Completa 50 misiones",icon:"🌟",condition:s=>s.totalQuestsCompleted>=50},
   {id:"quest_75",name:"Monarca en Ascenso",desc:"Completa 75 misiones",icon:"👑",condition:s=>s.totalQuestsCompleted>=75},
   {id:"quest_90",name:"La Cima",desc:"Completa 90 misiones",icon:"⬡",condition:s=>s.totalQuestsCompleted>=90},
@@ -3725,7 +3724,7 @@ function renderWeeklyTab(){
       </div>
       <div class="weekly-quest-meta">
         <span style="color:${dc}">Dif. ${wq.difficulty}</span>
-        <span style="color:var(--gold)">+${wq.xp} XP · +${wq.coins} 💎</span>
+        <span style="color:var(--gold)">+${wq.xp} XP · +${wq.coins} 🌑</span>
         <span style="color:var(--muted)">${progress}/${wq.target}</span>
       </div>
       <div class="weekly-quest-progress"><div class="weekly-quest-fill" style="width:${pct}%;${isDone?"background:var(--green)":""}"></div></div>
@@ -3747,7 +3746,7 @@ function renderWeeklyTab(){
         <div class="weekly-quest-meta" style="margin-bottom:4px">
           <span style="color:#f59e0b">🏆 Recompensa:</span>
           <span style="color:var(--gold)">+${EPIC_QUEST_DATA.xpReward} XP</span>
-          <span style="color:var(--gold)">+${EPIC_QUEST_DATA.coinsReward} 💎</span>
+          <span style="color:var(--gold)">+${EPIC_QUEST_DATA.coinsReward} 🌑</span>
           <span style="color:#a855f7">+${EPIC_QUEST_DATA.skillPointReward} SP</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px">
