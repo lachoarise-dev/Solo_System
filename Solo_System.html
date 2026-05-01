@@ -1147,7 +1147,7 @@
 
       <div class="quest-section-label">
         <div class="quest-label" style="color:var(--red)">⚠️ DAILY QUESTS</div>
-        <span style="font-size:10px;color:var(--muted)" id="daily-count">0/4 hoy</span>
+        <span style="font-size:10px;color:var(--muted)" id="daily-count">0/3 hoy</span>
       </div>
       <div id="daily-quests-list"></div>
 
@@ -1645,7 +1645,7 @@ function getDailyQuestsForToday() {
     const j=(seed*(i+1)*2654435761>>>0)%shuffled.length;
     [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
   }
-  return shuffled.slice(0,4);
+  return shuffled.slice(0,3);
 }
 let DAILY_QUESTS_DATA = getDailyQuestsForToday();
 
