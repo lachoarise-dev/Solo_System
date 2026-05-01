@@ -788,7 +788,7 @@
       <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="none" stroke="#0ea5e9" stroke-width="2" opacity="0.6"/><polygon points="50,15 85,32.5 85,67.5 50,85 15,67.5 15,32.5" fill="none" stroke="#0ea5e9" stroke-width="1" opacity="0.3"/></svg>
       <div class="ob-hex-icon">⬡</div>
     </div>
-    <div class="ob-system-tag">SOLO_SYSTEM v2.0 — PROTOCOLO DE DESPERTAR</div>
+    <div class="ob-system-tag">PROTOCOLO DE DESPERTAR</div>
     <div class="ob-title">
       <div class="glitch" data-text="EL SISTEMA">EL SISTEMA</div><br>
       <span style="color:var(--accent)">TE HA ELEGIDO</span>
@@ -4995,3 +4995,292 @@ window.closeRankUp = function(){
 </script>
 </body>
 </html>
+<script>
+// ══ MÓDULOS 2,3,4,6,7,8 — STATS NUEVOS ══
+(function(){
+  const STAT_DEFAULTS = { VIT:10, DIS:0, CAR:0, WIS:0, LCK:0 };
+  
+  function loadStats(){
+    let s = JSON.parse(localStorage.getItem('solo_extra_stats')||'{}');
+    return Object.assign({}, STAT_DEFAULTS, s);
+  }
+  function saveStats(stats){
+    localStorage.setItem('solo_extra_stats', JSON.stringify(stats));
+  }
+  function getLevel(){
+    return parseInt(localStorage.getItem('solo_level')||'1');
+  }
+  function getRank(){
+    return localStorage.getItem('solo_rank')||'E';
+  }
+  
+  // HP máximo según M2
+  const RANK_MULT = {E:1.0,D:1.1,C:1.2,B:1.3,A:1.5,S:1.8,SS:2.2,SSS:2.7,'Monarca':3.5};
+  function calcMaxHP(){
+    let st = loadStats();
+    let lv = getLevel();
+    let rk = getRank();
+    let mult = RANK_MULT[rk]||1.0;
+    return Math.floor((100 + lv*10 + st.VIT*25) * mult);
+  }
+  
+  // Stamina máxima (M21)
+  function calcMaxStamina(){
+    let st = loadStats();
+    let lv = getLevel();
+    let agi = parseInt(localStorage.getItem('solo_agi')||'10');
+    return 100 + agi*5 + lv*2 + st.VIT*2;
+  }
+  
+  // MP máximo (M22)
+  function calcMaxMP(){
+    let st = loadStats();
+    let lv = getLevel();
+    let int_ = parseInt(localStorage.getItem('solo_int')||'10');
+    return int_*15 + lv*3 + st.WIS*10;
+  }
+  
+  // DIS — streak 7 días (M3)
+  function checkDISStreak(){
+    let history = JSON.parse(localStorage.getItem('solo_daily_history')||'[]');
+    let today = new Date().toDateString();
+    // Añadir hoy si hay 3+ misiones completadas
+    let todayDone = parseInt(localStorage.getItem('solo_daily_done_today')||'0');
+    if(todayDone >= 3 && !history.includes(today)){
+      history.push(today);
+      localStorage.setItem('solo_daily_history', JSON.stringify(history));
+    }
+    // Verificar 7 días seguidos
+    if(history.length >= 7){
+      let last7 = history.slice(-7);
+      let allConsec = true;
+      for(let i=1;i<last7.length;i++){
+        let prev = new Date(last7[i-1]);
+        let curr = new Date(last7[i]);
+        let diff = (curr - prev)/(1000*60*60*24);
+        if(diff > 1){ allConsec = false; break; }
+      }
+      if(allConsec){
+        let st = loadStats();
+        st.DIS++;
+        saveStats(st);
+        let xp = parseInt(localStorage.getItem('solo_xp')||'0');
+        localStorage.setItem('solo_xp', xp + 50);
+        // Limpiar historial para nuevo ciclo
+        localStorage.setItem('solo_daily_history','[]');
+        console.log('🏆 +1 DIS por streak de 7 días');
+      }
+    }
+  }
+  
+  // updateStat global (M8)
+  window.updateExtraStat = function(statName, amount){
+    let st = loadStats();
+    if(st[statName] !== undefined){
+      st[statName] += amount;
+      saveStats(st);
+      renderExtraStats();
+    }
+  };
+  
+  // EXP bonus por DIS (M3): +2% por punto
+  window.getDISBonus = function(){
+    let st = loadStats();
+    return 1 + (st.DIS * 0.02);
+  };
+  
+  // Render en la UI
+  function renderExtraStats(){
+    let st = loadStats();
+    let panel = document.getElementById('extra-stats-panel');
+    if(!panel) return;
+    panel.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+        ${Object.entries(st).map(([k,v])=>`
+          <div style="background:#0a1020;border:1px solid #1a2540;border-radius:8px;padding:8px;text-align:center">
+            <div style="font-size:9px;color:#4a6080;font-family:'Orbitron',monospace;letter-spacing:1px">${k}</div>
+            <div style="font-size:20px;font-weight:900;font-family:'Orbitron',monospace;color:white">${v}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="font-size:9px;color:#4a6080;font-family:'Share Tech Mono',monospace;margin-top:8px">
+        HP MAX: ${calcMaxHP()} | STAMINA MAX: ${calcMaxStamina()} | MP MAX: ${calcMaxMP()}
+      </div>
+    `;
+  }
+  
+  // Inyectar panel en la pestaña Estado
+  function injectPanel(){
+    // Buscar tab de Estado o Sistema
+    let statusTab = document.querySelector('[data-tab="status"], [data-tab="estado"], #panel-status, #panel-estado');
+    if(!statusTab){
+      // Crear un div flotante si no se encuentra
+      let div = document.createElement('div');
+      div.id = 'extra-stats-panel';
+      div.style.cssText = 'position:fixed;bottom:80px;right:8px;background:#080d16;border:1px solid #1a2540;border-radius:10px;padding:12px;z-index:500;min-width:200px';
+      div.innerHTML = '<div style="font-size:9px;color:#0ea5e9;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:6px">STATS EXTRA</div>';
+      document.body.appendChild(div);
+    } else {
+      let div = document.createElement('div');
+      div.id = 'extra-stats-panel';
+      statusTab.appendChild(div);
+    }
+    renderExtraStats();
+  }
+  
+  // Activar Modo Supervivencia (M22)
+  function checkSurvivalMode(){
+    let maxMP = calcMaxMP();
+    let currentMP = parseInt(localStorage.getItem('solo_mp')||String(maxMP));
+    if(currentMP < maxMP * 0.2){
+      document.body.classList.add('survival-mode');
+      let banner = document.getElementById('survival-banner');
+      if(!banner){
+        banner = document.createElement('div');
+        banner.id = 'survival-banner';
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:980;background:#1a0a0088;border-bottom:2px solid #a855f7;padding:8px;text-align:center;font-family:Orbitron,monospace;font-size:11px;color:#a855f7;letter-spacing:2px;backdrop-filter:blur(8px)';
+        banner.textContent = '⚠ MODO SUPERVIVENCIA ACTIVO — MP CRÍTICO';
+        document.body.appendChild(banner);
+      }
+      banner.style.display='block';
+    }
+  }
+  
+  // Init
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(()=>{
+      injectPanel();
+      checkDISStreak();
+      checkSurvivalMode();
+    }, 2000);
+  });
+})();
+</script>
+<script>
+// ══ MÓDULO 19 — CURVA EXP ADICTIVA ══
+window.getXPForLevel = function(level){
+  if(level <= 10){
+    // Inicio rápido
+    return Math.floor(100 * Math.pow(level, 1.3));
+  } else {
+    // Curva logarítmica tipo Habitica
+    return Math.floor(100 * Math.pow(level, 1.3) * (1 + Math.log(level/10) * 0.8));
+  }
+};
+// Recompensas de quests por dificultad
+window.QUEST_REWARDS = {
+  facil:  { exp: 50,  sc: 2  },
+  medio:  { exp: 150, sc: 5  },
+  dificil:{ exp: 400, sc: 15 },
+  epica:  { exp: 1000,sc: 50 }
+};
+console.log('✅ Curva EXP M19 activa');
+</script>
+<script>
+// ══ MÓDULO 23 — LÍMITE 3 DIARIAS ══
+(function(){
+  function getTodayKey(){
+    return 'solo_daily_count_' + new Date().toDateString();
+  }
+  window.canAddDailyQuest = function(){
+    let count = parseInt(localStorage.getItem(getTodayKey())||'0');
+    return count < 3;
+  };
+  window.registerDailyQuest = function(){
+    let key = getTodayKey();
+    let count = parseInt(localStorage.getItem(key)||'0');
+    localStorage.setItem(key, count+1);
+  };
+  window.getDailyQuestCount = function(){
+    return parseInt(localStorage.getItem(getTodayKey())||'0');
+  };
+  console.log('✅ Límite 3 diarias M23 activo');
+})();
+</script>
+<script>
+// ══ MÓDULO 24B — ECONOMÍA HARDCORE ══
+window.DUNGEON_REWARDS = {
+  C:  { sc: 15,  exp: 300  },
+  B:  { sc: 35,  exp: 600  },
+  A:  { sc: 70,  exp: 1200 },
+  S:  { sc: 150, exp: 2500 },
+  SS: { sc: 300, exp: 5000 },
+  SSS:{ sc: 600, exp: 10000},
+  Monarca:{ sc:1200, exp:20000 }
+};
+window.DAILY_SC_RANGE = [2, 5]; // random entre 2-5 SC por misión diaria
+window.SHOP_PRICES = {
+  hp_potion: 50,
+  resurrection: 5000
+};
+window.getRandomDailySC = function(){
+  return Math.floor(Math.random()*4)+2; // 2-5
+};
+console.log('✅ Economía Hardcore M24B activa');
+</script>
+<script>
+// ══ MÓDULO 12 — RANGOS NUEVOS ══
+window.RANK_SYSTEM = [
+  {rank:'E',  minLevel:1,  color:'#9ca3af'},
+  {rank:'D',  minLevel:10, color:'#3b82f6'},
+  {rank:'C',  minLevel:20, color:'#8b5cf6'},
+  {rank:'B',  minLevel:30, color:'#10b981'},
+  {rank:'A',  minLevel:40, color:'#f59e0b'},
+  {rank:'S',  minLevel:50, color:'#ef4444'},
+  {rank:'SS', minLevel:77, color:'#00BFFF'},
+  {rank:'SSS',minLevel:88, color:'rainbow'},
+  {rank:'Monarca',minLevel:99,color:'#8A2BE2'}
+];
+window.getRankForLevel = function(level){
+  let r = 'E';
+  for(let i=0;i<window.RANK_SYSTEM.length;i++){
+    if(level >= window.RANK_SYSTEM[i].minLevel) r = window.RANK_SYSTEM[i].rank;
+  }
+  return r;
+};
+// Cambiar color de rango S a rojo
+document.addEventListener('DOMContentLoaded',function(){
+  setTimeout(()=>{
+    let badges = document.querySelectorAll('.rank-badge');
+    badges.forEach(b=>{
+      if(b.textContent.trim()==='S'){
+        b.style.color='#ef4444';
+        b.style.borderColor='#ef4444';
+        b.style.boxShadow='0 0 10px #ef444444';
+      }
+    });
+  },1500);
+});
+console.log('✅ Rangos M12 activos');
+</script>
+<script>
+// ══ MÓDULO 14 — WEEKLY ÉPICA MENSUAL ══
+(function(){
+  function getMonthKey(){
+    let d = new Date();
+    return 'solo_epic_' + d.getFullYear() + '_' + d.getMonth();
+  }
+  function checkMonthlyEpic(){
+    let key = getMonthKey();
+    let existing = localStorage.getItem(key);
+    if(!existing){
+      let lv = parseInt(localStorage.getItem('solo_level')||'1');
+      let epic = {
+        title: 'MISIÓN ÉPICA — ' + ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'][new Date().getMonth()],
+        desc: 'Completa el desafío mensual del Sistema. Solo los más fuertes prevalecen.',
+        reward_sc: lv * 10,
+        reward_title: 'Forjado en ' + new Date().toLocaleString('es',{month:'long'}),
+        done: false
+      };
+      localStorage.setItem(key, JSON.stringify(epic));
+      console.log('🏆 Nueva misión épica mensual generada');
+    }
+  }
+  window.getMonthlyEpic = function(){
+    return JSON.parse(localStorage.getItem(getMonthKey())||'null');
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(checkMonthlyEpic, 3000);
+  });
+})();
+</script>
