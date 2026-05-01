@@ -120,7 +120,7 @@
     #app.visible{display:flex}
 
     /* ═══ HEADER ═══ */
-    #header{padding:14px 16px 10px;background:linear-gradient(180deg,#080d16 0%,transparent 100%);border-bottom:1px solid var(--border);position:sticky;top:0;backdrop-filter:blur(24px);z-index:10}
+    #header{padding:14px 16px 10px;background:linear-gradient(180deg,#080d16 0%,transparent 100%);border-bottom:1px solid var(--border);position:sticky;top:0;backdrop-filter:blur(24px);z-index:10;box-shadow:0 2px 20px #00000088}
     .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
     .sys-label{font-size:9px;color:var(--rank-color);letter-spacing:3px;font-family:'Orbitron',monospace;margin-bottom:2px;opacity:.8}
     .hunter-name{font-size:11px;color:var(--muted);font-family:'Share Tech Mono',monospace;letter-spacing:1px;margin-bottom:3px}
@@ -146,7 +146,7 @@
     .tab-btn.active{color:var(--rank-color);border-bottom-color:var(--rank-color)}
 
     /* ═══ CONTENT ═══ */
-    #content{flex:1;padding:14px 14px 90px;overflow-y:auto}
+    #content{flex:1;padding:14px 14px 90px;overflow-y:auto;margin-top:0}
     .tab-panel{display:none;animation:fadeIn .25s ease}
     .tab-panel.active{display:block}
 
@@ -162,7 +162,7 @@
     .stat-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
 
     /* ═══ COMBAT STATS ═══ */
-    .stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:12px}
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px}
     .stat-cell{background:var(--bg3);border-radius:8px;padding:7px 4px;text-align:center;border:1px solid;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
     .stat-cell:hover{transform:translateY(-2px)}
     .stat-icon{font-size:16px;margin-bottom:3px}
@@ -717,13 +717,64 @@
     .demo-btn.purple{border-color:#8A2BE266;color:#8A2BE2}
     .demo-btn.purple:hover{border-color:#8A2BE2;box-shadow:0 0 15px #8A2BE244}
     .demo-btn-close{background:none;border:1px solid #ffffff22;border-radius:7px;padding:8px 10px;color:#ffffff44;font-size:10px;cursor:pointer}
+
+    /* SIDEBAR COLAPSABLE */
+    #sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:linear-gradient(180deg,#060c14,#080d18);border-right:1px solid #1a2540;z-index:500;transform:translateX(-220px);transition:transform .3s ease;display:flex;flex-direction:column;padding-top:60px;overflow-y:auto}
+    #sidebar.open{transform:translateX(0);box-shadow:4px 0 30px #00000088}
+    #sidebar-toggle{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:501;background:linear-gradient(135deg,#0a1428,#0c1830);border:1px solid #1a2540;border-left:none;border-radius:0 8px 8px 0;padding:12px 6px;cursor:pointer;transition:all .3s;color:#4a6080;font-size:14px}
+    #sidebar-toggle:hover{color:#0ea5e9;border-color:#0ea5e944;background:#0ea5e911}
+    #sidebar.open ~ #sidebar-toggle,body.sidebar-open #sidebar-toggle{left:220px;color:#0ea5e9}
+    .sidebar-item{display:flex;align-items:center;gap:10px;padding:12px 16px;color:#4a6080;font-family:Orbitron,monospace;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;border-bottom:1px solid #1a254022;text-decoration:none}
+    .sidebar-item:hover{color:#0ea5e9;background:#0ea5e908;border-left:2px solid #0ea5e9;padding-left:14px}
+    .sidebar-item.active{color:#0ea5e9;background:#0ea5e911;border-left:2px solid #0ea5e9;padding-left:14px}
+    .sidebar-icon{font-size:16px;flex-shrink:0}
+    .sidebar-label{flex:1}
+    .sidebar-section{font-size:8px;color:#1a2540;font-family:Orbitron,monospace;letter-spacing:3px;padding:10px 16px 4px;text-transform:uppercase}
+    #sidebar-vol{padding:12px 16px;border-top:1px solid #1a2540;margin-top:auto}
+    #sidebar-vol-label{font-size:9px;color:#4a6080;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:8px}
+    #sidebar-vol-slider{width:100%;-webkit-appearance:none;appearance:none;height:3px;background:linear-gradient(90deg,#0ea5e9,#7c3aed);border-radius:2px;outline:none;cursor:pointer}
+    #sidebar-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#0ea5e9;box-shadow:0 0 6px #0ea5e9;cursor:pointer}
+    #sidebar-overlay{position:fixed;inset:0;background:#00000066;z-index:499;display:none;backdrop-filter:blur(2px)}
+    #sidebar-overlay.show{display:block}
+    body.sidebar-open{overflow:hidden}
   </style>
 </head>
 <body>
 <div id="particles"></div>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="sidebar">
+  <div class="sidebar-section">NAVEGACION</div>
+  <div class="sidebar-item" onclick="switchTab('achieve',document.querySelector('[data-tab=achieve]'));closeSidebar()">
+    <span class="sidebar-icon">🏆</span><span class="sidebar-label">LOGROS</span>
+  </div>
+  <div class="sidebar-item" onclick="switchTab('weekly',document.querySelector('[data-tab=weekly]'));closeSidebar()">
+    <span class="sidebar-icon">📅</span><span class="sidebar-label">WEEKLY</span>
+  </div>
+  <div class="sidebar-item" onclick="switchTab('ranking',document.querySelector('[data-tab=ranking]'));closeSidebar()">
+    <span class="sidebar-icon">📊</span><span class="sidebar-label">RANKING</span>
+  </div>
+  <div class="sidebar-item" onclick="switchTab('aicoach',document.querySelector('[data-tab=aicoach]'));closeSidebar()">
+    <span class="sidebar-icon">🤖</span><span class="sidebar-label">AI COACH</span>
+  </div>
+  <div class="sidebar-item" onclick="switchTab('shop',document.querySelector('[data-tab=shop]'));closeSidebar()">
+    <span class="sidebar-icon">🏪</span><span class="sidebar-label">TIENDA</span>
+  </div>
+  <div class="sidebar-item" onclick="switchTab('guild',document.querySelector('[data-tab=guild]'));closeSidebar()">
+    <span class="sidebar-icon">⚔️</span><span class="sidebar-label">GUILDS</span>
+  </div>
+  <div class="sidebar-item" onclick="switchTab('inventory',document.querySelector('[data-tab=inventory]'));closeSidebar()">
+    <span class="sidebar-icon">🎒</span><span class="sidebar-label">INVENTARIO</span>
+  </div>
+  <div id="sidebar-vol">
+    <div id="sidebar-vol-label">🔊 VOLUMEN</div>
+    <input id="sidebar-vol-slider" type="range" min="0" max="100" value="40" oninput="setVolume(this.value)"/>
+  </div>
+</div>
+<button id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
 <div class="scan-line"></div>
 <div id="notif"></div>
-<div id="by-lacho">by lacho</div>
+
 
 <!-- ══ VFX v8 ELEMENTS ══ -->
 <!-- 1. Blue Ember Canvas -->
@@ -788,7 +839,7 @@
       <svg viewBox="0 0 100 100"><polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="none" stroke="#0ea5e9" stroke-width="2" opacity="0.6"/><polygon points="50,15 85,32.5 85,67.5 50,85 15,67.5 15,32.5" fill="none" stroke="#0ea5e9" stroke-width="1" opacity="0.3"/></svg>
       <div class="ob-hex-icon">⬡</div>
     </div>
-    <div class="ob-system-tag">SOLO_SYSTEM v2.0 — PROTOCOLO DE DESPERTAR</div>
+    <div class="ob-system-tag">SOLO SYSTEM — PROTOCOLO DE DESPERTAR</div>
     <div class="ob-title">
       <div class="glitch" data-text="EL SISTEMA">EL SISTEMA</div><br>
       <span style="color:var(--accent)">TE HA ELEGIDO</span>
@@ -796,7 +847,6 @@
     <div class="ob-scan-bar"><div class="ob-scan-fill"></div></div>
     <div class="ob-text">Entre miles de millones de almas débiles, <em>solo uno</em> puede alzarse.<br>El Sistema ha despertado en las sombras.<br>Has sido seleccionado. Tu ascenso es inevitable.</div>
     <button class="ob-btn" onclick="nextSlide()">RESPONDER AL LLAMADO →</button>
-    <div style="position:absolute;bottom:18px;right:18px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;opacity:.5;pointer-events:none">by lacho · creador del sistema</div>
   </div>
 
   <!-- Slide 1: Name + Avatar -->
@@ -977,7 +1027,7 @@
       <div style="display:flex;align-items:center;gap:10px">
         <div class="header-avatar" id="header-avatar" onclick="switchTab('stats',document.querySelector('[data-tab=stats]'))">👤</div>
         <div>
-          <div class="sys-label">Solo_Sistem</div>
+          <div class="sys-label">SISTEMA</div>
           <div class="hunter-name" id="h-hunter-name">CAZADOR</div>
           <div class="level-row">
             <span class="level-num" id="h-level">Nv.1</span>
@@ -1148,7 +1198,7 @@
 
       <div class="quest-section-label">
         <div class="quest-label" style="color:var(--red)">⚠️ DAILY QUESTS</div>
-        <span style="font-size:10px;color:var(--muted)" id="daily-count">0/4 hoy</span>
+        <span style="font-size:10px;color:var(--muted)" id="daily-count">0/3 hoy</span>
       </div>
       <div id="daily-quests-list"></div>
 
@@ -1417,7 +1467,14 @@
         <div class="identity-sub" id="id-sub">Nivel 1 · Rango E Hierro</div>
       </div>
 
-      <div class="total-sessions-row">
+      <div style="background:linear-gradient(135deg,#0a0820,#0c0a20);border:1px solid #a855f744;border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+  <div>
+    <div style="font-size:10px;color:#a855f7;font-family:Orbitron,monospace;letter-spacing:2px;margin-bottom:2px">SKILL POINTS</div>
+    <div style="font-size:10px;color:var(--muted);font-family:Share Tech Mono,monospace">Disponibles para gastar</div>
+  </div>
+  <div style="font-family:Orbitron,monospace;font-size:32px;font-weight:900;color:#a855f7">✨ <span id="estado-sp">0</span></div>
+</div>
+<div class="total-sessions-row">
         <div class="session-box">
           <div class="session-val" id="stat-total-quests">0</div>
           <div class="session-label">QUESTS</div>
@@ -1499,7 +1556,7 @@ const RANK_MSGS = {
   A:"Estás entre los elegidos. La cima está cerca.",
   S:"Has alcanzado lo imposible. Eres el Monarca de las Sombras."
 };
-const DIFF_XP = {E:20,D:35,C:55,B:80,A:120,S:200};
+const DIFF_XP = {E:30,D:55,C:90,B:140,A:200,S:300};
 const STAT_COLORS = {STR:"#ef4444",INT:"#3b82f6",AGI:"#10b981",VIT:"#f59e0b",DIS:"#06b6d4",CAR:"#ec4899",WIS:"#8b5cf6",LCK:"#f97316"};
 const STAT_ICONS = {STR:"⚔️",INT:"🔮",AGI:"💨",VIT:"🛡️",DIS:"🔩",CAR:"👑",WIS:"📖",LCK:"🍀"};
 
@@ -1554,7 +1611,7 @@ const SKILL_BRANCHES = [
     skills:[
       {id:"phantom_step",name:"Phantom Step",desc:"+15% XP en quests AGI",cost:2,icon:"💨",prereq:null},
       {id:"vitality_surge",name:"Vitality Surge",desc:"+15% XP en quests VIT",cost:2,icon:"🛡️",prereq:null},
-      {id:"coin_hoarder",name:"Coin Hoarder",desc:"+20% coins en cada quest",cost:2,icon:"💎",prereq:"phantom_step"},
+      {id:"coin_hoarder",name:"Coin Hoarder",desc:"+20% coins en cada quest",cost:2,icon:"🌑",prereq:"phantom_step"},
       {id:"shadow_economy",name:"Shadow Economy",desc:"+1 Skill Point cada 5 quests",cost:3,icon:"🌑",prereq:"coin_hoarder"},
     ]
   }
@@ -1634,6 +1691,86 @@ const ALL_QUESTS_POOL = [
   {id:"dq48",title:"Termina una tarea pendiente que evitas",stat:"INT",xp:40,coins:25,difficulty:"C"},
   {id:"dq49",title:"Acuéstate y levántate a la misma hora",stat:"VIT",xp:35,coins:22,difficulty:"C"},
   {id:"dq50",title:"Sin excusas: completa tu quest más difícil primero",stat:"STR",xp:70,coins:45,difficulty:"A"},
+  {id:"str1",title:"Haz 50 flexiones con pausa de 2 seg abajo",stat:"STR",xp:55,coins:35,difficulty:"B"},
+  {id:"str2",title:"Completa 5 series de 10 dominadas",stat:"STR",xp:75,coins:48,difficulty:"A"},
+  {id:"str3",title:"Haz 200 sentadillas en total hoy",stat:"STR",xp:60,coins:38,difficulty:"B"},
+  {id:"str4",title:"30 fondos de tríceps en paralelas",stat:"STR",xp:45,coins:28,difficulty:"C"},
+  {id:"str5",title:"Haz 10 burpees cada hora durante 5 horas",stat:"STR",xp:80,coins:50,difficulty:"A"},
+  {id:"str6",title:"Completa una rutina de fuerza de 45 min",stat:"STR",xp:65,coins:42,difficulty:"B"},
+  {id:"str7",title:"Haz 100 zancadas con peso",stat:"STR",xp:55,coins:35,difficulty:"B"},
+  {id:"str8",title:"3 series de press de banca al fallo",stat:"STR",xp:70,coins:45,difficulty:"A"},
+  {id:"str9",title:"Haz 60 flexiones diamante",stat:"STR",xp:60,coins:38,difficulty:"B"},
+  {id:"str10",title:"Completa 400 repeticiones de cualquier ejercicio STR",stat:"STR",xp:90,coins:58,difficulty:"A"},
+  {id:"int1",title:"Resuelve un problema de lógica o matemáticas",stat:"INT",xp:35,coins:22,difficulty:"C"},
+  {id:"int2",title:"Aprende una habilidad nueva durante 1 hora",stat:"INT",xp:55,coins:35,difficulty:"B"},
+  {id:"int3",title:"Escribe un resumen de lo que aprendiste hoy",stat:"INT",xp:30,coins:18,difficulty:"D"},
+  {id:"int4",title:"Lee un artículo científico y explícalo",stat:"INT",xp:45,coins:28,difficulty:"C"},
+  {id:"int5",title:"Estudia sin interrupciones 2 horas seguidas",stat:"INT",xp:70,coins:45,difficulty:"A"},
+  {id:"int6",title:"Practica un idioma extranjero 30 minutos",stat:"INT",xp:35,coins:22,difficulty:"C"},
+  {id:"int7",title:"Haz un curso online de al menos 1 lección",stat:"INT",xp:40,coins:25,difficulty:"C"},
+  {id:"int8",title:"Escribe un plan detallado para tu semana",stat:"INT",xp:30,coins:18,difficulty:"D"},
+  {id:"int9",title:"Memoriza 20 datos o conceptos nuevos",stat:"INT",xp:45,coins:28,difficulty:"C"},
+  {id:"int10",title:"Termina un libro o capítulo importante",stat:"INT",xp:60,coins:38,difficulty:"B"},
+  {id:"agi1",title:"Corre 3km en menos de 18 minutos",stat:"AGI",xp:65,coins:42,difficulty:"B"},
+  {id:"agi2",title:"Haz 10 minutos de saltos de cuerda sin parar",stat:"AGI",xp:50,coins:32,difficulty:"B"},
+  {id:"agi3",title:"Completa una rutina de agilidad con escalera",stat:"AGI",xp:45,coins:28,difficulty:"C"},
+  {id:"agi4",title:"Haz 5 sprints de 100 metros",stat:"AGI",xp:60,coins:38,difficulty:"B"},
+  {id:"agi5",title:"Camina o corre 8km hoy",stat:"AGI",xp:55,coins:35,difficulty:"B"},
+  {id:"agi6",title:"Practica equilibrio 15 minutos",stat:"AGI",xp:30,coins:18,difficulty:"D"},
+  {id:"agi7",title:"Haz 3 series de escaladores 30 seg",stat:"AGI",xp:40,coins:25,difficulty:"C"},
+  {id:"agi8",title:"Completa un circuito cardio de 20 minutos",stat:"AGI",xp:50,coins:32,difficulty:"B"},
+  {id:"agi9",title:"Haz 100 saltos alternos de piernas",stat:"AGI",xp:35,coins:22,difficulty:"C"},
+  {id:"agi10",title:"Termina una clase de baile o deportes",stat:"AGI",xp:55,coins:35,difficulty:"B"},
+  {id:"vit1",title:"Duerme 8 horas completas esta noche",stat:"VIT",xp:40,coins:25,difficulty:"C"},
+  {id:"vit2",title:"Bebe 3 litros de agua hoy",stat:"VIT",xp:30,coins:18,difficulty:"D"},
+  {id:"vit3",title:"Come 5 porciones de frutas y verduras",stat:"VIT",xp:35,coins:22,difficulty:"C"},
+  {id:"vit4",title:"Haz 20 minutos de respiración profunda",stat:"VIT",xp:30,coins:18,difficulty:"D"},
+  {id:"vit5",title:"Sin alcohol, tabaco ni azucar hoy",stat:"VIT",xp:50,coins:32,difficulty:"B"},
+  {id:"vit6",title:"Duerme antes de las 22:00",stat:"VIT",xp:45,coins:28,difficulty:"C"},
+  {id:"vit7",title:"Haz una sesion de sauna o bano de vapor",stat:"VIT",xp:35,coins:22,difficulty:"C"},
+  {id:"vit8",title:"Completa 30 min de estiramientos profundos",stat:"VIT",xp:30,coins:18,difficulty:"D"},
+  {id:"vit9",title:"Prepara todas tus comidas del dia en casa",stat:"VIT",xp:40,coins:25,difficulty:"C"},
+  {id:"vit10",title:"Sin pantallas 2 horas antes de dormir",stat:"VIT",xp:45,coins:28,difficulty:"C"},
+  {id:"dis1",title:"Completa tu rutina manana sin saltarte nada",stat:"DIS",xp:50,coins:32,difficulty:"B"},
+  {id:"dis2",title:"Haz la tarea mas dificil del dia primero",stat:"DIS",xp:45,coins:28,difficulty:"C"},
+  {id:"dis3",title:"Sin redes sociales antes del mediodia",stat:"DIS",xp:40,coins:25,difficulty:"C"},
+  {id:"dis4",title:"Completa tu lista de tareas del dia al 100%",stat:"DIS",xp:60,coins:38,difficulty:"B"},
+  {id:"dis5",title:"Levantate a la misma hora que ayer",stat:"DIS",xp:35,coins:22,difficulty:"C"},
+  {id:"dis6",title:"No pospongas ninguna decision hoy",stat:"DIS",xp:40,coins:25,difficulty:"C"},
+  {id:"dis7",title:"Completa 3 habitos de tu rutina sin fallar",stat:"DIS",xp:50,coins:32,difficulty:"B"},
+  {id:"dis8",title:"Trabaja en bloques de 50 min sin distraccion",stat:"DIS",xp:55,coins:35,difficulty:"B"},
+  {id:"dis9",title:"Escribe tu progreso del dia antes de dormir",stat:"DIS",xp:30,coins:18,difficulty:"D"},
+  {id:"dis10",title:"Rechaza una distraccion importante hoy",stat:"DIS",xp:45,coins:28,difficulty:"C"},
+  {id:"wis1",title:"Medita 15 minutos con atencion plena",stat:"WIS",xp:35,coins:22,difficulty:"C"},
+  {id:"wis2",title:"Escribe 3 lecciones que aprendiste esta semana",stat:"WIS",xp:30,coins:18,difficulty:"D"},
+  {id:"wis3",title:"Lee sobre filosofia o estoicismo 20 min",stat:"WIS",xp:35,coins:22,difficulty:"C"},
+  {id:"wis4",title:"Practica gratitud escrita durante 10 minutos",stat:"WIS",xp:25,coins:15,difficulty:"E"},
+  {id:"wis5",title:"Reflexiona sobre un error y escribe como mejorarlo",stat:"WIS",xp:35,coins:22,difficulty:"C"},
+  {id:"wis6",title:"Haz una sesion de terapia o autoanalisis",stat:"WIS",xp:50,coins:32,difficulty:"B"},
+  {id:"wis7",title:"Escucha a alguien sin interrumpir ni juzgar",stat:"WIS",xp:30,coins:18,difficulty:"D"},
+  {id:"wis8",title:"Practica mindfulness durante una comida",stat:"WIS",xp:25,coins:15,difficulty:"E"},
+  {id:"wis9",title:"Identifica tus 3 valores mas importantes",stat:"WIS",xp:35,coins:22,difficulty:"C"},
+  {id:"wis10",title:"Haz un ejercicio de control emocional",stat:"WIS",xp:40,coins:25,difficulty:"C"},
+  {id:"car1",title:"Inicia una conversacion con alguien nuevo",stat:"CAR",xp:35,coins:22,difficulty:"C"},
+  {id:"car2",title:"Da un cumplido genuino a 3 personas",stat:"CAR",xp:25,coins:15,difficulty:"D"},
+  {id:"car3",title:"Lidera una conversacion o reunion hoy",stat:"CAR",xp:50,coins:32,difficulty:"B"},
+  {id:"car4",title:"Ayuda a alguien sin que te lo pidan",stat:"CAR",xp:30,coins:18,difficulty:"D"},
+  {id:"car5",title:"Habla en publico aunque sea brevemente",stat:"CAR",xp:55,coins:35,difficulty:"B"},
+  {id:"car6",title:"Resuelve un conflicto de forma calmada",stat:"CAR",xp:50,coins:32,difficulty:"B"},
+  {id:"car7",title:"Escribe un mensaje de apoyo a alguien",stat:"CAR",xp:25,coins:15,difficulty:"E"},
+  {id:"car8",title:"Practica escucha activa en una conversacion",stat:"CAR",xp:30,coins:18,difficulty:"D"},
+  {id:"car9",title:"Organiza un plan con amigos o familia",stat:"CAR",xp:40,coins:25,difficulty:"C"},
+  {id:"car10",title:"Da feedback constructivo a alguien hoy",stat:"CAR",xp:45,coins:28,difficulty:"C"},
+  {id:"lck1",title:"Prueba algo completamente nuevo hoy",stat:"LCK",xp:35,coins:22,difficulty:"C"},
+  {id:"lck2",title:"Di que si a algo que normalmente rechazarias",stat:"LCK",xp:40,coins:25,difficulty:"C"},
+  {id:"lck3",title:"Conecta con alguien al azar hoy",stat:"LCK",xp:30,coins:18,difficulty:"D"},
+  {id:"lck4",title:"Encuentra una oportunidad oculta en tu dia",stat:"LCK",xp:45,coins:28,difficulty:"C"},
+  {id:"lck5",title:"Haz algo espontaneo fuera de tu rutina",stat:"LCK",xp:35,coins:22,difficulty:"C"},
+  {id:"lck6",title:"Explora un lugar nuevo en tu ciudad",stat:"LCK",xp:40,coins:25,difficulty:"C"},
+  {id:"lck7",title:"Acepta un reto inesperado del dia",stat:"LCK",xp:50,coins:32,difficulty:"B"},
+  {id:"lck8",title:"Habla con un desconocido sobre sus suenos",stat:"LCK",xp:45,coins:28,difficulty:"C"},
+  {id:"lck9",title:"Participa en un sorteo o concurso hoy",stat:"LCK",xp:20,coins:12,difficulty:"E"},
+  {id:"lck10",title:"Ayuda a alguien sin esperar nada a cambio",stat:"LCK",xp:35,coins:22,difficulty:"C"},
 ];
 
 // Genera 4 misiones diarias aleatorias rotando el pool según la fecha
@@ -1646,7 +1783,7 @@ function getDailyQuestsForToday() {
     const j=(seed*(i+1)*2654435761>>>0)%shuffled.length;
     [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
   }
-  return shuffled.slice(0,4);
+  return shuffled.slice(0,3);
 }
 let DAILY_QUESTS_DATA = getDailyQuestsForToday();
 
@@ -1654,7 +1791,7 @@ let DAILY_QUESTS_DATA = getDailyQuestsForToday();
 const SHOP_ITEMS = [
   {id:"potion_berserker",name:"Poción Berserker",icon:"🔴",desc:"Aumenta 1.3x las reps de tu próxima quest STR durante 24h",price:80,effect:"berserker_boost",duration:24*60*60*1000},
   {id:"potion_shadow_elixir",name:"Elixir de Sombra",icon:"⚫",desc:"+50% XP en todas las quests durante 2 horas",price:120,effect:"xp_boost_50",duration:2*60*60*1000},
-  {id:"potion_mana_crystal",name:"Cristal de Maná",icon:"💎",desc:"Restaura MP al máximo instantáneamente",price:60,effect:"restore_mp",duration:0},
+  {id:"potion_mana_crystal",name:"Cristal de Maná",icon:"🌑",desc:"Restaura MP al máximo instantáneamente",price:60,effect:"restore_mp",duration:0},
   {id:"potion_phoenix_blood",name:"Sangre del Fénix",icon:"🔥",desc:"Restaura HP al máximo y +20 HP permanente",price:150,effect:"phoenix",duration:0},
   {id:"potion_time_warp",name:"Elixir Temporal",icon:"⌛",desc:"+2 Skill Points instantáneamente",price:200,effect:"skill_points_2",duration:0},
   {id:"potion_kings_decree",name:"Decreto Real",icon:"👑",desc:"Dobla las coins ganadas durante 4 horas",price:250,effect:"coin_boost_2x",duration:4*60*60*1000},
@@ -1684,7 +1821,7 @@ const STAT_SKILL_TREE = [
     desc:"El intelecto que descifra los secretos del Sistema",
     skills:[
       {id:"int_1",name:"Ojo Arcano",desc:"+10% XP en quests INT",icon:"👁️",cost:60,bonus:"int_xp_10"},
-      {id:"int_2",name:"Cristal de Maná",desc:"+10 MP máximo permanente",icon:"💎",cost:100,bonus:"mp_10"},
+      {id:"int_2",name:"Cristal de Maná",desc:"+10 MP máximo permanente",icon:"🌑",cost:100,bonus:"mp_10"},
       {id:"int_3",name:"Trance del Sabio",desc:"+20% XP en todas las sesiones Focus",icon:"🧠",cost:150,bonus:"focus_xp_20"},
       {id:"int_4",name:"Sello del Conocimiento",desc:"Cada nivel de INT suma +2 XP por quest permanente",icon:"📜",cost:220,bonus:"int_per_level"},
       {id:"int_5",name:"Dominio del Sistema",desc:"El Sistema revela su verdad: +1 Skill Point cada 3 niveles",icon:"🌌",cost:350,bonus:"sp_per_3lvl"},
@@ -1709,7 +1846,7 @@ const STAT_SKILL_TREE = [
     skills:[
       {id:"vit_1",name:"Piel de Hierro",desc:"+10% XP en quests VIT",icon:"🛡️",cost:60,bonus:"vit_xp_10"},
       {id:"vit_2",name:"Regeneración Oscura",desc:"HP se regenera +10 al completar cualquier quest",icon:"❤️",cost:100,bonus:"hp_regen_10"},
-      {id:"vit_3",name:"Voluntad Inquebrantable",desc:"Nunca entras en estado Debilitado por fallar 1 día",icon:"💎",cost:150,bonus:"no_weaken"},
+      {id:"vit_3",name:"Voluntad Inquebrantable",desc:"Nunca entras en estado Debilitado por fallar 1 día",icon:"🌑",cost:150,bonus:"no_weaken"},
       {id:"vit_4",name:"Corazón del Monarca",desc:"HP máximo +30 + MP máximo +15",icon:"💜",cost:220,bonus:"hp30_mp15"},
       {id:"vit_5",name:"Inmortal de las Sombras",desc:"Al perder racha, conservas el 50% del progreso semanal",icon:"⚜️",cost:350,bonus:"streak_keep_50"},
     ]
@@ -1729,7 +1866,7 @@ const ACHIEVEMENTS_DATA = [
   {id:"first_quest",name:"Cazador Novato",desc:"Completa tu primera misión",icon:"⚔️",condition:s=>s.totalQuestsCompleted>=1},
   {id:"quest_5",name:"En el Camino",desc:"Completa 5 misiones",icon:"🗡️",condition:s=>s.totalQuestsCompleted>=5},
   {id:"quest_15",name:"Veterano",desc:"Completa 15 misiones",icon:"🏹",condition:s=>s.totalQuestsCompleted>=15},
-  {id:"quest_25",name:"Élite",desc:"Completa 25 misiones",icon:"💎",condition:s=>s.totalQuestsCompleted>=25},
+  {id:"quest_25",name:"Élite",desc:"Completa 25 misiones",icon:"🌑",condition:s=>s.totalQuestsCompleted>=25},
   {id:"quest_50",name:"Leyenda",desc:"Completa 50 misiones",icon:"🌟",condition:s=>s.totalQuestsCompleted>=50},
   {id:"quest_75",name:"Monarca en Ascenso",desc:"Completa 75 misiones",icon:"👑",condition:s=>s.totalQuestsCompleted>=75},
   {id:"quest_90",name:"La Cima",desc:"Completa 90 misiones",icon:"⬡",condition:s=>s.totalQuestsCompleted>=90},
@@ -1765,6 +1902,12 @@ const ACHIEVEMENTS_DATA = [
 // ═══════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════
+function getInventorySlots(level) {
+  // 2 slots base, +1 cada 10 niveles, max 10 en nivel 80
+  const extra = Math.min(Math.floor(level / 10), 8);
+  return 2 + extra;
+}
+
 function defaultState() {
   return {
     hunterName:"CAZADOR",
@@ -1838,23 +1981,9 @@ let S = loadState();
 function loadState() {
   try {
     const raw = localStorage.getItem("solo_system_v2");
-    if (!raw) return defaultState();
-    const saved = JSON.parse(raw);
-    const def = defaultState();
-    saved.stats = Object.assign({}, def.stats, saved.stats || {});
-    return Object.assign({}, def, saved);
-  } catch(e) {
-    console.error("Save corrupto:", e);
-    return defaultState();
-  }
-}
-    saved.stats = Object.assign({}, def.stats, saved.stats || {});
-    return Object.assign({}, def, saved);
-  } catch(e) {
-    console.error("Save corrupto:", e);
-    return defaultState();
-  }
-}
+    if(raw) return {...defaultState(),...JSON.parse(raw)};
+  } catch(e){}
+  return defaultState();
 }
 function saveState() {
   try { localStorage.setItem("solo_system_v2",JSON.stringify(S)); } catch(e){}
@@ -3739,7 +3868,7 @@ function renderWeeklyTab(){
       </div>
       <div class="weekly-quest-meta">
         <span style="color:${dc}">Dif. ${wq.difficulty}</span>
-        <span style="color:var(--gold)">+${wq.xp} XP · +${wq.coins} 💎</span>
+        <span style="color:var(--gold)">+${wq.xp} XP · +${wq.coins} 🌑</span>
         <span style="color:var(--muted)">${progress}/${wq.target}</span>
       </div>
       <div class="weekly-quest-progress"><div class="weekly-quest-fill" style="width:${pct}%;${isDone?"background:var(--green)":""}"></div></div>
@@ -3761,7 +3890,7 @@ function renderWeeklyTab(){
         <div class="weekly-quest-meta" style="margin-bottom:4px">
           <span style="color:#f59e0b">🏆 Recompensa:</span>
           <span style="color:var(--gold)">+${EPIC_QUEST_DATA.xpReward} XP</span>
-          <span style="color:var(--gold)">+${EPIC_QUEST_DATA.coinsReward} 💎</span>
+          <span style="color:var(--gold)">+${EPIC_QUEST_DATA.coinsReward} 🌑</span>
           <span style="color:#a855f7">+${EPIC_QUEST_DATA.skillPointReward} SP</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px">
@@ -4612,6 +4741,32 @@ if(S.onboardingDone){
 }
 
 document.getElementById("ob-name-input").addEventListener("keydown",e=>{if(e.key==="Enter") setName();});
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  const tog = document.getElementById('sidebar-toggle');
+  if (sb.classList.contains('open')) {
+    sb.classList.remove('open');
+    ov.classList.remove('show');
+    tog.innerHTML = '☰';
+    document.body.classList.remove('sidebar-open');
+  } else {
+    sb.classList.add('open');
+    ov.classList.add('show');
+    tog.innerHTML = '✕';
+    document.body.classList.add('sidebar-open');
+  }
+}
+function closeSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  const tog = document.getElementById('sidebar-toggle');
+  sb.classList.remove('open');
+  ov.classList.remove('show');
+  tog.innerHTML = '☰';
+  document.body.classList.remove('sidebar-open');
+}
 </script>
 
 <!-- ══════════════════════════════════════════
